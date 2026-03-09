@@ -3,7 +3,6 @@
 # Download models
 cd /mnt
 mkdir llama3-ckpts
-cd llama3-ckpts
 modelscope download --model LLM-Research/Meta-Llama-3.1-8B --local_dir ./llama3-ckpts/Meta-Llama-3.1-8B
 
 # set the Megatron pythonpath
@@ -16,14 +15,12 @@ bash hf2mcore_convertor_llama3_1.sh \
 8B \
 /mnt/llama3-ckpts/Meta-Llama-3.1-8B    \
 /mnt/llama3-ckpts/Meta-Llama-3.1-8B-mcore-tp2-pp2  \
-2  \
-2  \
-false \
-true \
-false \
-bf16 \
 1 \
-1 2>&1 | tee /tmp/llama3_convert.log
+1 \
+false \
+false \
+false \
+bf16 2>&1 | tee /tmp/llama3_convert.log
 
 # make qwen 2.5 sft datasets
 cd /mnt
