@@ -8,7 +8,7 @@ mkdir qwen-ckpts qwen-datasets
 modelscope download --model Qwen/Qwen3-8B --local_dir ./qwen-ckpts/Qwen3-8B
 
 # convert HF model to Megatron-Core model
-cd /workspace/Pai-Megatron-Patch/toolkits/distributed_checkpoints_convertor
+cd /workspace/FT-cutlass/Pai-Megatron-Patch/toolkits/distributed_checkpoints_convertor
 bash scripts/qwen3/run_8xH20.sh \
 8B \
 /mnt/qwen-ckpts/Qwen3-8B \
@@ -23,7 +23,7 @@ cd /mnt/qwen-datasets
 wget https://raw.githubusercontent.com/tatsu-lab/stanford_alpaca/main/alpaca_data.json
 
 # make the datasets
-cd /workspace/Pai-Megatron-Patch/toolkits/sft_data_preprocessing
+cd /workspace/FT-cutlass/Pai-Megatron-Patch/toolkits/sft_data_preprocessing
 bash run_build_idxmap_sft_dataset.sh \
 /mnt/qwen-datasets/alpaca_data.json \
 Qwen3Tokenizer \
