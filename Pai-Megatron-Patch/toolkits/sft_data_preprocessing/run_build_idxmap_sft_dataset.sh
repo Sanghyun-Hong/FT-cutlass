@@ -1,4 +1,7 @@
 #! /bin/bash
+
+set -x
+
 START_TIME=$SECONDS
 
 CURRENT_DIR="$( cd "$( dirname "$0" )" && pwd )"
