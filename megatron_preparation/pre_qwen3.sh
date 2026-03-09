@@ -1,11 +1,16 @@
 #!/bin/bash
 
+
 # make model and dataset dir
 cd /mnt
 mkdir qwen-ckpts qwen-datasets
 
 # download the model checkpoint
 modelscope download --model Qwen/Qwen3-8B --local_dir ./qwen-ckpts/Qwen3-8B
+
+# set the Megatron pythonpath
+export TORCH_DISABLE_ADDR2LINE=1
+export PYTHONPATH=/workspace/FT-cutlass/Pai-Megatron-Patch/backends/megatron/Megatron-LM-250908:/workspace/FT-cutlass/Pai-Megatron-Patch:$PYTHONPATH
 
 # convert HF model to Megatron-Core model
 cd /workspace/FT-cutlass/Pai-Megatron-Patch/toolkits/distributed_checkpoints_convertor
@@ -15,7 +20,10 @@ bash scripts/qwen3/run_8xH20.sh \
 /mnt/qwen-ckpts/Qwen3-8B-to-mcore  \
 false \
 true \
-bf16
+bf16 \
+whatever \
+1 \
+1 2>&1 | tee /tmp/qwen3_convert.log
 
 # download the dataset
 cd /mnt/qwen-datasets
