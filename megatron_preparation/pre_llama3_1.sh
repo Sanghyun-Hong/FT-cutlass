@@ -15,10 +15,10 @@ bash hf2mcore_convertor_llama3_1.sh \
 8B \
 /mnt/llama3-ckpts/Meta-Llama-3.1-8B    \
 /mnt/llama3-ckpts/Meta-Llama-3.1-8B-mcore-tp2-pp2  \
-1 \
-1 \
+2 \
+2 \
 false \
-false \
+true \
 false \
 bf16 2>&1 | tee /tmp/llama3_convert.log
 

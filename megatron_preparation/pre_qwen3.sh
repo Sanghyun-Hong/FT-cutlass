@@ -22,9 +22,9 @@ false \
 true \
 bf16 \
 whatever \
-1 \
-1 2>&1 | tee /tmp/qwen3_convert.log
-
+2 \
+2 2>&1 | tee /tmp/qwen3_convert.log
+ 
 # download the dataset
 cd /mnt/qwen-datasets
 # wget --no-check-certificate https://atp-modelzoo-wlcb-pai.oss-cn-wulanchabu.aliyuncs.com/release/models/pai-megatron-patch/qwen-datasets/qwen_sft.json
@@ -38,3 +38,6 @@ Qwen3Tokenizer \
 1024 \
 /mnt/qwen-datasets/mmap_qwen3_sft_datasets_en \
 /mnt/qwen-ckpts/Qwen3-8B
+
+
+# all three models needs 4 GPUs

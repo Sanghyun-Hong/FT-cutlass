@@ -18,8 +18,8 @@ false \
 true \
 bf16 \
 whatever \
-1 \
-1 2>&1 | tee /tmp/qwen2.5_convert.log
+2 \
+2 2>&1 | tee /tmp/qwen2.5_convert.log
 
 # make qwen 2.5 sft datasets
 cd /workspace/FT-cutlass/Pai-Megatron-Patch/toolkits/sft_data_preprocessing
