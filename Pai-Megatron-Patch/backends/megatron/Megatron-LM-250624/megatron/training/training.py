@@ -2405,6 +2405,10 @@ def train(
         file.truncate(0)
         file.write('f')
 
+    # TODO - check the sanity: the code raises an error without faulty step
+    faulty_step = 0
+    faulty_duration = 0
+
     # with open(falutyStepFP, 'r') as file:
     #     faulty_step = int(file.readline())
     # with open(totalfaultyStepFP, 'r') as file:

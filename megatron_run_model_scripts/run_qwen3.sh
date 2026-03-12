@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# debugging options
+set -euo pipefail
+
+# check the run locations
+echo "PWD=$(pwd)"
+ls -l ./Pai-Megatron-Patch/examples/qwen3/pretrain_qwen.py
+ls -l ./Pai-Megatron-Patch/examples/qwen3/run_mcore_qwen3.sh
+
 # clean logs, "cannot import name 'triton_key"
 export TORCH_LOGS="-dynamo"
 
@@ -83,7 +91,7 @@ for i in {1..5}; do
   "$checkpointing_interval"  \
   "$DS_DIR/qwen-datasets/mmap_qwen3_sft_datasets_en_text_document"   \
   "$DS_DIR/qwen-datasets/mmap_qwen3_sft_datasets_en_text_document"   \
-  "$MODEL_DIR/qwen-ckpts/Qwen3-8B-to-mcore-tp2-pp2"  \
+  "$MODEL_DIR/qwen-ckpts/Qwen3-8B-to-mcore"  \
   "$total_steps"  \
   50   \
   "$MODEL_DIR/logs/output_mcore_qwen3_finetune"
@@ -104,7 +112,14 @@ for i in {1..5}; do
   fi
 
   # Evaluation
-  ckpt_abs_path=$(realpath $MODEL_DIR/logs/output_mcore_qwen3_finetune/checkpoint/*)
+  # ckpt_abs_path=$(realpath $MODEL_DIR/logs/output_mcore_qwen3_finetune/checkpoint/*)
+  # ckpt_abs_path=$(find "$MODEL_DIR/logs/output_mcore_qwen3_finetune/checkpoint" -mindepth 1 -maxdepth 1 -type d | head -n 1)			# working
+  ckpt_abs_path=$(find "$MODEL_DIR/logs/output_mcore_qwen3_finetune/checkpoint" -mindepth 1 -maxdepth 1 -type d | sort | tail -n 1)
+  if [[ -z "${ckpt_abs_path:-}" ]]; then
+    echo "ERROR: No checkpoint experiment directory found under $MODEL_DIR/logs/output_mcore_qwen3_finetune/checkpoint"
+    exit 1
+  fi
+
   # collect all iters (ascending, strip leading zeros)
   mapfile -t all_iters < <(
     find "$ckpt_abs_path" -maxdepth 1 -type d -name 'iter_[0-9]*' \
@@ -140,7 +155,7 @@ for i in {1..5}; do
     "$PP"
 
     # evaluation
-    cd /workspace
+    cd /workspace/FT-cutlass
     # CUDA_VISIBLE_DEVICES=0 python ./model_evaluation_scripts/qwen3_GE_eval.py
     CUDA_VISIBLE_DEVICES=0 python ./model_evaluation_scripts/qwen3_multi_tasks.py
 
@@ -153,7 +168,7 @@ for i in {1..5}; do
   python read_tensorboard.py $SRC
 
   # add new line to validation file
-  printf "\n" >> "/workspace/control_$JOB_ID/eval_results.txt"
+  printf "\n" >> "/workspace/FT-cutlass/control_$JOB_ID/eval_results.txt"
 
   # collect the tensorboard log
   # mv $MODEL_DIR/logs/output_mcore_qwen3_finetune/tensorboard/* /workspace/tensorboards_log/finetune-mcore-qwen3-moe-megatron-8B-${TIME_STAMP}

@@ -21,11 +21,13 @@ from transformers import (
 )
 from tqdm import tqdm
 
-MODEL_ID = "/projects/qwen-ckpts/Qwen3-8B-mcore-to-hf-cutlass"
+# MODEL_ID = "/projects/qwen-ckpts/Qwen3-8B-mcore-to-hf-cutlass"
 # MODEL_ID = "/projects/qwen-ckpts/Qwen2.5-7B-mcore-to-hf-cutlass"
+MODEL_ID = "/mnt/qwen-ckpts/Qwen3-8B-mcore-to-hf-cutlass"
 
 job_id = os.getenv('SLURM_JOB_ID') or "local_dev" 
-logFP = f"./control_{job_id}/eval_results.txt"
+# logFP = f"./control_{job_id}/eval_results.txt"
+logFP = f"/workspace/FT-cutlass/control_{job_id}/eval_results.txt"
 
 # try:
 #     falutyStepFP = f"./control_{job_id}/0/faulty_step.txt"
