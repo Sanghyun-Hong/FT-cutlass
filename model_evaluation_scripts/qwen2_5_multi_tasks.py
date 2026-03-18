@@ -25,10 +25,12 @@ from tqdm import tqdm
 # 1. Config
 # ==========================================
 
-MODEL_ID = "/projects/qwen-ckpts/Qwen2.5-7B-mcore-to-hf-cutlass"
+# MODEL_ID = "/projects/qwen-ckpts/Qwen2.5-7B-mcore-to-hf-cutlass"
+MODEL_ID = "/mnt/qwen-ckpts/Qwen2.5-7B-mcore-to-hf-cutlass"
 
 job_id = os.getenv('SLURM_JOB_ID') or "local_dev" 
-logFP = f"./control_{job_id}/eval_results.txt"
+# logFP = f"./control_{job_id}/eval_results.txt"
+logFP = f"/workspace/FT-cutlass/control_{job_id}/eval_results.txt"
 
 INFERENCE_BATCH_SIZE = 16  
 EVAL_SAMPLES = 480

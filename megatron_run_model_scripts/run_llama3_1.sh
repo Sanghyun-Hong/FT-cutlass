@@ -7,6 +7,13 @@
 
 # 30 mins/experiment
 
+set -euo pipefail
+
+# check the run locations
+echo "PWD=$(pwd)"
+ls -l ./Pai-Megatron-Patch/examples/llama3_1/pretrain_llama.py
+ls -l ./Pai-Megatron-Patch/examples/llama3_1/run_mcore_llama3_1.sh
+
 # clean logs, "cannot import name 'triton_key"
 export TORCH_LOGS="-dynamo"
 
@@ -129,7 +136,13 @@ for i in {1..1}; do
   # ckpt_abs_path=$(realpath /projects/logs/output_mcore_llama3_1/checkpoint/*)
   # num_checkpoints=$(find $ckpt_abs_path -maxdepth 1 -type d -name 'iter_[0-9][0-9][0-9][0-9][0-9][0-9][0-9]' | wc -l)
 
-  ckpt_abs_path=$(realpath $MODEL_DIR/logs/output_mcore_llama3_1/checkpoint/*)
+  # ckpt_abs_path=$(realpath $MODEL_DIR/logs/output_mcore_llama3_1/checkpoint/*)
+  ckpt_abs_path=$(find "$MODEL_DIR/logs/output_mcore_llama3_1/checkpoint" -mindepth 1 -maxdepth 1 -type d | sort | tail -n 1)
+  if [[ -z "${ckpt_abs_path:-}" ]]; then
+    echo "ERROR: No checkpoint experiment directory found under $MODEL_DIR/logs/output_mcore_llama3_1_finetune/checkpoint"
+    exit 1
+  fi
+
   # collect all iters (ascending, strip leading zeros)
   mapfile -t all_iters < <(
     find "$ckpt_abs_path" -maxdepth 1 -type d -name 'iter_[0-9]*' \
@@ -153,7 +166,7 @@ for i in {1..1}; do
     printf "$current_iter" > "$ckpt_abs_path/latest_checkpointed_iteration.txt"
 
     # convert the checkpoint (8B needs more than 64GB Memory)
-    cd /workspace/Pai-Megatron-Patch/toolkits/model_checkpoints_convertor/llama
+    cd /workspace/FT-cutlass/Pai-Megatron-Patch/toolkits/model_checkpoints_convertor/llama
     bash hf2mcore_convertor_llama3_1.sh \
     "$MODEL_Size" \
     "$ckpt_abs_path"    \
@@ -167,7 +180,7 @@ for i in {1..1}; do
     "$MODEL_DIR/llama3-ckpts/Meta-Llama-3.1-8B"
 
     # evaluation
-    cd /workspace
+    cd /workspace/FT-cutlass
     # CUDA_VISIBLE_DEVICES=0 python ./model_evaluation_scripts/llama3_1_GE_eval.py
     CUDA_VISIBLE_DEVICES=0 python ./model_evaluation_scripts/llama3_1_multi_tasks.py
 
@@ -180,7 +193,7 @@ for i in {1..1}; do
   python read_tensorboard.py $SRC
 
   # add new line to validation file
-  printf "\n" >> "/workspace/control_$JOB_ID/eval_results.txt"
+  printf "\n" >> "/workspace/FT-cutlass/control_$JOB_ID/eval_results.txt"
 
   # # collect the tensorboard log
   # SRC="$MODEL_DIR/logs/output_mcore_qwen3_finetune/tensorboard"

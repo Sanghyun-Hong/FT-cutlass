@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# debugging options
+set -euo pipefail
+
+# check the run locations
+echo "PWD=$(pwd)"
+ls -l ./Pai-Megatron-Patch/examples/qwen2_5/run_mcore_qwen.sh
+
 # clean logs, "cannot import name 'triton_key"
 export TORCH_LOGS="-dynamo"
 
@@ -93,7 +100,7 @@ for i in {1..33}; do
   "$checkpointing_interval"  \
   "$DS_DIR/qwen-datasets/mmap_qwen2_sft_datasets_en_text_document"   \
   "$DS_DIR/qwen-datasets/mmap_qwen2_sft_datasets_en_text_document "  \
-  "$MODEL_DIR/qwen-ckpts/Qwen2.5-7B-to-mcore-tp2-pp2"  \
+  "$MODEL_DIR/qwen-ckpts/Qwen2.5-7B-to-mcore"  \
   "$total_steps"  \
   50   \
   "$MODEL_DIR/logs/output_mcore_qwen2.5_finetune"
@@ -114,7 +121,13 @@ for i in {1..33}; do
   fi
 
   # Evaluation
-  ckpt_abs_path=$(realpath $MODEL_DIR/logs/output_mcore_qwen2.5_finetune/checkpoint/*)
+  # ckpt_abs_path=$(realpath $MODEL_DIR/logs/output_mcore_qwen2.5_finetune/checkpoint/*)
+  ckpt_abs_path=$(find "$MODEL_DIR/logs/output_mcore_qwen2.5_finetune/checkpoint" -mindepth 1 -maxdepth 1 -type d | sort | tail -n 1)
+  if [[ -z "${ckpt_abs_path:-}" ]]; then
+    echo "ERROR: No checkpoint experiment directory found under $MODEL_DIR/logs/output_mcore_qwen2.5_finetune/checkpoint"
+    exit 1
+  fi
+
   # collect all iters (ascending, strip leading zeros)
   mapfile -t all_iters < <(
     find "$ckpt_abs_path" -maxdepth 1 -type d -name 'iter_[0-9]*' \
@@ -150,7 +163,7 @@ for i in {1..33}; do
       "$PP"
 
     # evaluation
-    cd /workspace
+    cd /workspace/FT-cutlass
     # CUDA_VISIBLE_DEVICES=0 python ./model_evaluation_scripts/qwen2_5_GE_eval.py
     CUDA_VISIBLE_DEVICES=0 python ./model_evaluation_scripts/qwen2_5_multi_tasks.py
 
@@ -163,7 +176,7 @@ for i in {1..33}; do
   python read_tensorboard.py $SRC
 
   # add new line to validation file
-  printf "\n" >> "/workspace/control_$JOB_ID/eval_results.txt"
+  printf "\n" >> "/workspace/FT-cutlass/control_$JOB_ID/eval_results.txt"
 
   # # collect the tensorboard log
   # SRC="$MODEL_DIR/logs/output_mcore_qwen2.5_finetune/tensorboard"

@@ -23,9 +23,12 @@ from tqdm import tqdm
 
 # Job id
 job_id = os.getenv('SLURM_JOB_ID') or "local_dev" 
-logFP = f"./control_{job_id}/eval_results.txt"
+# logFP = f"./control_{job_id}/eval_results.txt"
+logFP = f"/workspace/FT-cutlass/control_{job_id}/eval_results.txt"
 
-MODEL_ID = "/projects/llama3-ckpts/Llama-3.1-8B-mcore-to-hf-cutlass"
+# MODEL_ID = "/projects/llama3-ckpts/Llama-3.1-8B-mcore-to-hf-cutlass"
+MODEL_ID = "/mnt/llama3-ckpts/Llama-3.1-8B-mcore-to-hf-cutlass"
+
 # MODEL_ID = "/projects/llama3-ckpts/Meta-Llama-3.1-8B"
 # MODEL_ID = "/projects/llama3-ckpts/Meta-Llama-3.1-8B-hf-from-mg"
 

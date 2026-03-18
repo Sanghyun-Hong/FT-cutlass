@@ -348,7 +348,7 @@ megatron_options="  \
 #  ${megatron_options} ${dataset_option} ${pr_options} ${load_options} ${te_options} ${activation_checkpoint_options} \
 #  ${do_options} ${sp_options} ${gqa_options} ${offload_option} ${comm_overlap_option} ${sft_option} ${vp_options} ${packing_options}"
 
-run_cmd="torchrun $DISTRIBUTED_ARGS /workspace/Pai-Megatron-Patch/examples/llama3_1/pretrain_llama.py
+run_cmd="torchrun $DISTRIBUTED_ARGS /workspace/FT-cutlass/Pai-Megatron-Patch/examples/llama3_1/pretrain_llama.py
  ${megatron_options} ${dataset_option} ${pr_options} ${load_options} ${te_options} ${activation_checkpoint_options} \
  ${do_options} ${sp_options} ${gqa_options} ${offload_option} ${sft_option} ${vp_options} ${packing_options} ${attn_backend_option}"
 
